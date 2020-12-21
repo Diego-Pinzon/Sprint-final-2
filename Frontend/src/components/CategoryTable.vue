@@ -219,10 +219,6 @@ export default {
       ]
     },
 
-    list(){
-      axios.get('http://')
-    },
-
     editItem (item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
