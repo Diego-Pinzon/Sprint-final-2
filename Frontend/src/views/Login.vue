@@ -5,13 +5,13 @@
 </template>
 
 <script>
-// import TheLogin from '@/components/auth/TheLogin.vue';
+
 import TheLogin from '@/components/auth/TheLogin.vue'
 
 export default {
     name: 'Login',
     components: {
-        TheLogin,
+        TheLogin
   },
 };
 </script>

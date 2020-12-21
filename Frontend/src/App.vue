@@ -5,7 +5,7 @@
     <v-app-bar app>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Trans4mate</v-toolbar-title>
+      <v-toolbar-title>DTrans4m</v-toolbar-title>
     </v-app-bar>
     <v-btn
         @click.prevent="GoLogin"
@@ -126,7 +126,7 @@ export default {
     ],
     cruds: [
       ['Articulos', 'mdi-cart', 'Articles'],
-      ['Categorias', 'mdi-view-list', 'Category']
+      ['Categorias', 'mdi-view-list', 'Categorias']
     ] }),
 };
 </script>

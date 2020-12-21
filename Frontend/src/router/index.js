@@ -16,15 +16,21 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    meta:{
+      requiresAuth : true
+    }
   },
   {
-    path: '/category',
-    name: 'Category',
+    path: '/categorias',
+    name: 'Categorias',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Category.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/Categoras.vue'),
+    meta:{
+      requiresAuth : true
+    }
   },
   {
     path: '/login',
@@ -41,5 +47,22 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach ( (to, from, next) => {
+  if ( to.matched.some ( destinoRequiereAuth => destinoRequiereAuth.meta.requiresAuth ) ){
+    if ( localStorage.getItem('token'))
+    {
+      next();
+    }else { 
+      next({
+        path: '/'
+      })
+     }
+  }else {
+    next();
+  }
+
+})
+
 
 export default router

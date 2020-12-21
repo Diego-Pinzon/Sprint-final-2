@@ -1,15 +1,19 @@
 <template>
-    <v-data-table
+    <div>
+       <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="usuarios"
+      :loading ="cargando"
+      loading-text="Cargando...Por favor espere..."
       sort-by="id"
       class="elevation-1"
+      
     >
       <template v-slot:top>
         <v-toolbar
           flat
         >
-          <v-toolbar-title>Categorias</v-toolbar-title>
+          <v-toolbar-title>Categotias</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -28,7 +32,7 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                AGREGAR CATEGORÍA
+                Agregar Usuario
               </v-btn>
             </template>
             <v-card>
@@ -39,57 +43,18 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
                       <v-text-field
-                        v-model="editedItem.name"
-                        label="Dessert name"
+                        v-model="editedItem.nombre"
+                        label="Nombre de la categoria"
                       ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.id"
-                        label="ID"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.otronombre"
-                        label="nombre"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.descripción"
-                        label="Descripción"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                    >
-                      <v-text-field
-                        v-model="editedItem.estado"
-                        label="Estado"
-                      ></v-text-field>
-                    </v-col>
                   </v-row>
+                  <v-row>
+                      <v-text-field
+                        v-model="editedItem.password"
+                        label="Contraseña"
+                      ></v-text-field>
+                  </v-row>
+                  
                 </v-container>
               </v-card-text>
   
@@ -114,7 +79,7 @@
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="headline">Are you sure you want to delete this item?</v-card-title>
+              <v-card-title class="headline">¿Desea cambiar el estado de la categoria?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
@@ -125,7 +90,7 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon
           small
           class="mr-2"
@@ -137,7 +102,7 @@
           small
           @click="deleteItem(item)"
         >
-          mdi-delete
+          mdi-checkbox-marked-circle-outline
         </v-icon>
       </template>
       <template v-slot:no-data>
@@ -149,47 +114,54 @@
         </v-btn>
       </template>
     </v-data-table>
+    </div>
 </template>
 <script>
-import axios from "a"
+//import axios from "axios";
 export default {
+  
     data: () => ({
     dialog: false,
     dialogDelete: false,
+    cargando: true,
+    iconocambio: '',
     headers: [
       {
-        text: 'Categoria de mis productos',
+        text: 'Usuarios registrados',
         align: 'start',
         sortable: false,
-        value: 'name',
+        value: 'nombre',
       },
-      { text: 'ID', value: 'id' },
-      { text: 'OtroNombre', value: 'otronombre' },
-      { text: 'Descripción', value: 'descripcion' },
+      { text: 'ID', value: 'id', sortable: false},
+      { text: 'Rol', value: 'rol', sortable: false},
+      { text: 'Correo electronico', value: 'email' },
       { text: 'Estado', value: 'estado' },
+      { text: 'Contraseña', value: 'password' },
       { text: 'Actions', value: 'actions', sortable: false },
     ],
-    desserts: [],
+    usuarios: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
       id: 0,
-      nombre: 0,
-      estado: 0,
+      nombre: '',
+      rol: '',
+      email: '',
+      password: '',
       estado: 0,
     },
     defaultItem: {
-      name: '',
       id: 0,
-      estado: 0,
-      descripcion: 0,
+      nombre: '',
+      rol: '',
+      email: '',
+      password: '',
       estado: 0,
     },
   }),
 
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
     },
   },
 
@@ -208,31 +180,51 @@ export default {
 
   methods: {
     initialize () {
-      this.desserts = [
-        {
-          name: 'Frozen Yogurt',
-          id: 159,
-          otronombre: 6.0,
-          descripción: 24,
-          estado: 4.0,
-        }
-      ]
+      this.cargando = 'loading'
+      this.list()
+    },
+    list(){
+      
+      this.$axios.get('/usuario/list')
+        .then( (response) => {
+            this.usuarios = response.data
+            this.cargando = false
+        })
+        .catch(error =>{
+          return error
+        })
+      
     },
 
     editItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
+      
+      this.editedIndex = this.usuarios.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
+
+      
     },
 
     deleteItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
+      this.editedIndex = this.usuarios.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     deleteItemConfirm () {
-      this.desserts.splice(this.editedIndex, 1)
+      if(this.editedItem.estado === 1){
+          this.$axios.put('/usuario/deactivate', {id: this.editedItem.id})
+          .then( () =>{
+        this.list()
+      })
+          
+      }else{
+          this.$axios.put('/usuario/activate', {id: this.editedItem.id})
+          .then( () =>{
+        this.list()
+      })
+      }
+      
       this.closeDelete()
     },
 
@@ -254,12 +246,36 @@ export default {
 
     save () {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
+        //Editar en base de datos
+      let objetoBusqueda = {
+        nombre: this.editedItem.nombre,
+        password: this.editedItem.password,
+        email: this.editedItem.email,
+        id: this.editedItem.id
       }
+      this.$axios.put('/usuario/update',objetoBusqueda)
+      .then( () =>{
+        this.list()
+      })
+        Object.assign(this.usuarios[this.editedIndex], this.editedItem)
+      } else {
+        //Editar en base de datos
+        let objetoBusqueda = {
+         nombre: this.editedItem.nombre,
+        password: this.editedItem.password,
+        email: this.editedItem.email,
+        rol: this.editedItem.rol,
+        estado: 1
+      }
+      this.$axios.post('/usuario/add',objetoBusqueda)
+      .then( () =>{
+        this.list()
+      })
+        this.usuarios.push(this.editedItem)
+      }
+      //Actualizar la tabla
       this.close()
     },
-  }
+  },
 }
 </script>
