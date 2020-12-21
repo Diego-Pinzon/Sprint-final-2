@@ -31,12 +31,12 @@
   
           <v-list-item-title>Inicio</v-list-item-title>
         </v-list-item>
-        <v-list-item to= "Login">
+        <v-list-item @click="cerrarSesion">
           <v-list-item-icon>
-            <v-icon>mdi-key</v-icon>
+            <v-icon>mdi-login-variant</v-icon>
           </v-list-item-icon>
   
-          <v-list-item-title>Login</v-list-item-title>
+          <v-list-item-title>Log Out</v-list-item-title>
         </v-list-item>
         <v-list-group
           :value="true"
@@ -58,8 +58,9 @@
             </template>
   
             <v-list-item
-              v-for="([title, icon], i) in admins"
+              v-for="([title, icon, ruta], i) in admins"
               :key="i"
+              :to="ruta"
               link
             >
               <v-list-item-title v-text="title"></v-list-item-title>
@@ -118,15 +119,25 @@ export default {
     HelloWorld,
   },
 
-  data: () => ({ 
+  data: () => ({
+    //
     drawer: null,
     admins: [
-      ['Usuarios', 'mdi-account-multiple-outline'],
-      ['Configuración', 'mdi-cog-outline'],
+      ['Usuarios', 'mdi-account-multiple-outline' , 'Usuarios'],
+      ['Configuracion', 'mdi-cog-outline'],
     ],
     cruds: [
-      ['Articulos', 'mdi-cart', 'Articles'],
-      ['Categorias', 'mdi-view-list', 'Categorias']
-    ] }),
+      ['Articulos', 'mdi-cart', 'Articulos'],
+      ['Categorias', 'mdi-playlist-check', 'Categorias'],
+    ],
+  }),
+  methods:{
+        cerrarSesion(){
+          localStorage.removeItem('token')
+          localStorage.removeItem('usuario')
+          swal("Exito!", "Ha cerrado sesión correctamente!", "success")
+          this.$router.push('/')
+        }
+      },
 };
 </script>
