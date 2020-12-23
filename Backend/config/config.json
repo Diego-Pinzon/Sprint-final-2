@@ -8,8 +8,12 @@
         "port": "3306"
     },
     "test": {
-        "dialect": "sqlite",
-        "storage": "./database.sqlite3"
+        "username": "IyGD2DWbv2",
+        "password": "LLGJyYfqnV",
+        "database": "IyGD2DWbv2",
+        "host": "remotemysql.com",
+        "dialect": "mysql",
+        "port": "3306"
     },
     "production": {
         "dialect": "sqlite",

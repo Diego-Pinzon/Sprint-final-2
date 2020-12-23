@@ -44,7 +44,7 @@
       width="300"
     >
           <v-list dense>
-            <template v-if="logueado">
+            <template :v-if="logueado">
               <v-list-group>
                 <v-list-item slot="activator">
                   <v-list-item-content>
@@ -101,7 +101,7 @@ export default {
     return {
       categorias: products.categorias
     }
-  }
+  },
 }
 </script>
 

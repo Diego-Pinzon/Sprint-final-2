@@ -15,8 +15,14 @@ module.exports = {
         }
     },
 
-    register : async (req, res, next) => {
-
+    add : async (req, res, next) => {
+        try {
+            const re = await Usuario.create(req.body);
+            res.status(200).json(re);
+        } catch (error) {
+            res.status(500).json({'error' : 'Ocurrio algo'})
+            next(error);
+        }
     },
 
     login : async (req, res, next) => {
@@ -29,7 +35,6 @@ module.exports = {
                 if (contrasenhaValida)
                 {
                     const token = servtoken.encode(user.id, user.rol);
-                    
                     /*jwt.sign( {
                         id: user.id,
                         username: user.username,
@@ -63,15 +68,27 @@ module.exports = {
 
     update : async (req, res, next) => {
         try {
-            const user = await Usuario.findOne( { where :  { email : req.body.email } } );
-            const contrasenhaAnrigua = bcrypt.compareSync(req.body.password, user.password);
-            const newcontrasenha = bcrypt.hashSync(req.body.newpassword);
-            if (contrasenhaAnrigua) {
-                const re = await Usuario.update({nombre: req.body.nombre, password: newcontrasenha, estado: req.body.estado},{ where: {email: req.body.email}});
-                res.status(200).json(re);
-            } else {
-                res.status(401).send({ auth: false, tokenReturn: null, reason: 'Contraseña invalida' });
-            }
+            const re = await Usuario.update(req.body,{ where: {email: req.body.email}});
+            res.status(200).json(re);
+        } catch (error) {
+            res.status(500).json({'error' : 'Ocurrio algo'})
+            next(error);
+        }
+    },
+
+    activate : async (req, res, next) => {
+        try {
+            const re = await Usuario.update({ estado: 1 },{ where: {id: req.body.id}});
+            res.status(200).json(re);
+        } catch (error) {
+            res.status(500).json({'error' : 'Ocurrio algo'})
+            next(error);
+        }
+    },
+    deactivate : async (req, res, next) => {
+        try {
+            const re = await Usuario.update({ estado: 0 },{ where: {id: req.body.id}});
+            res.status(200).json(re);
         } catch (error) {
             res.status(500).json({'error' : 'Ocurrio algo'})
             next(error);

@@ -5,23 +5,23 @@
         <v-card>
           <v-card-text class="pt-4">
             <div>
-                <v-form v-model="valid" ref="form">
+                <v-form v-model="login.valid" ref="form">
                   <v-text-field
                     label="Ingrese el email"
-                    v-model="email"
+                    v-model="login.email"
                     :rules="emailRules"
                     required
                   ></v-text-field>
                   <v-text-field
                     label="Ingrese su contraseña"
-                    v-model="password"
+                    v-model="login.password"
                     min="8"
-                    :type="e1 ? 'password' : 'text'"
+                    type="password"
                     :rules="passwordRules"
                     required
                   ></v-text-field>
                   <v-layout justify-space-between>
-                      <v-btn @click="submit" :class=" { 'text white--text' : valid, disabled: !valid }">Entrar</v-btn>
+                      <v-btn @click="loginUser" :disabled="!login.valid">Entrar</v-btn>
                       <a href="" class="text--text">Olvido su contraseña</a>
                   </v-layout>
                 </v-form>
@@ -42,19 +42,28 @@ export default {
       login: {
         email: '',
         password: '',
+        valid: true
       },
+      emailRules: [
+        v => !!v || "E-mail is required",
+        v => /.+@.+/.test(v) || "E-mail must be valid"
+      ],
+      passwordRules: [ 
+        v => !!v || 'Password is required', 
+        v => (v && v.length >= 5) || 'Password must have 5+ characters' 
+      ]
     };
   },
   methods: {
     async loginUser() {
       try {
-        console.log(this.login);
-        let response = await this.$http.post('/api/usuario/signin', this.login);
-        console.log(response.data.accessToken);
-        let token = response.data.accessToken;
-        var decoded = jwt.decode(token, {complete: true});
-        console.log(decoded.payload);
-        let user = decoded.payload;
+        //console.log(this.login);
+        let response = await this.$http.post('/api/usuario/login', this.login);
+        //console.log(response.data.accessToken);
+        let token = response.data.tokenReturn;
+        //var decoded = jwt.decode(token, {complete: true});
+        //console.log(decoded.payload);
+        let user = response.data.user;
 
         localStorage.setItem('jwt', token);
         localStorage.setItem('user',JSON.stringify(user));
