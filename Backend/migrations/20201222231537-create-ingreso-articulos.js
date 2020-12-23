@@ -9,10 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       ingresoId: {
-        type: Sequelize.INTEGER
-      },
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          model: 'Ingresos',
+          key: 'id'
+        }
+      }, 
       articuloId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          model: 'Articulos',
+          key: 'id'
+        }
       },
       articulo: {
         type: Sequelize.STRING

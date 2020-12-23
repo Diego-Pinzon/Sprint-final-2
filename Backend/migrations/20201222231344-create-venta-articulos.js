@@ -9,11 +9,21 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       ventaId: {
-        type: Sequelize.INTEGER
-      },
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          model: 'Venta',
+          key: 'id'
+        }
+      }, 
       articuloId: {
-        type: Sequelize.INTEGER
-      },
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { 
+          model: 'Articulos',
+          key: 'id'
+        }
+      }, 
       articulo: {
         type: Sequelize.STRING
       },
