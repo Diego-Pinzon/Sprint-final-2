@@ -2,78 +2,119 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 
+
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/home',
+    path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+      children: [
+        {
+          path: '/services/:slug',
+          name: 'services',
+          
+          component: () => import( /* webpackChunkName: "Services" */'../views/Services.vue'),
+          props: true,
+      
+          children: [
+            {
+              path: ':articleSlug',
+              name: 'articleDetails',
+              props: true,
+              component: () => import( /* webpackChunkName: "Articles" */'../views/Articles.vue'),
+            }
+          ]
+          
+        },
+      ]
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue'),
-    meta:{
-      requiresAuth : true
-    }
-  },
-  {
-    path: '/categorias',
-    name: 'Categorias',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Categorias.vue'),
-    meta:{
-      requireAuth : true
-    }
-  },
-  {
-    path: '/usuarios',
-    name: 'Usuarios',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/Usuarios.vue'),
-    meta:{
-      requireAuth : true
-    }
+    path: '/contacto',
+    name: 'Contacto',
+
+    component: () => import( /* webpackChunkName: "Contacto" */'../views/Contacto.vue'),
+    props: true
   },
   {
     path: '/login',
-    name: 'Login',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '@/views/Login.vue')
-  }
+    name: 'login',
+
+    component: () => import( /* webpackChunkName: "Login" */'../views/Login.vue'),
+    props: true,
+    meta: {
+      public: true
+    }
+  },
+  {
+      path: '/usuario',
+      name: 'usuario',
+      component: () => import( /* webpackChunkName: "Usuario" */'../components/Usuario.vue'),
+      meta: {
+          auth: true
+      }
+  },
+  
+  {
+      path: "/categoria",
+      name: "categoria",
+      component: () => import( /* webpackChunkName: "Categoria" */'../components/Categoria.vue'),
+      meta: {
+          auth: true
+      }
+
+  },
+
+  {
+      path: "/articulo",
+      name: "articulo",
+      component: () => import( /* webpackChunkName: "Articulo" */'../components/Articulo.vue'),
+      meta: {
+          auth: true
+      }
+
+  },
+  
 ]
 
 const router = new VueRouter({
   mode: 'history',
+  linkExactActiveClass: "active-class",
+
   base: process.env.BASE_URL,
+
+  scrollBehavior(to, from, savedPosition){
+    if (savedPosition){
+      return savedPosition;
+    } else{
+      const position = {};
+      if (to.hash){
+        position.selector = to.hash;
+        if(document.querySelector(to.hash)){
+          return position;
+        }
+        return false;
+      }
+    }
+  },
   routes
 })
 
-router.beforeEach ( (to, from, next) => {
-  if ( to.matched.some ( destinoRequiereAuth => destinoRequiereAuth.meta.requiresAuth ) ){
-    if ( localStorage.getItem('token'))
-    {
-      next();
-    }else { 
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requiresAuth)) {
+    // need to login
+    if (!store.user) {
       next({
-        path: '/'
-      })
-     }
-  }else {
+        name: 'login',
+        query: {redirect: to.fullPath}
+      });
+    }else {
+      next();
+    }
+  } else {
     next();
   }
-
-})
-
+});
 
 export default router
